@@ -8,11 +8,17 @@ const LINE =
 const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 
 // Gate guard: the entry must be 1–120 characters, not only whitespace.
-if (LINE.length < 1 || LINE.length > 120 || LINE.trim().length === 0) {
-  throw new Error(
-    `entry must be 1-120 characters, got ${LINE.length} characters`,
-  );
+// The bounty judge rejects anything outside that range, so we fail fast
+// here instead of writing an entry that would be scored as invalid.
+function checkEntryLength(line: string): void {
+  if (line.length < 1 || line.length > 120 || line.trim().length === 0) {
+    throw new Error(
+      `entry must be 1-120 characters, got ${line.length} characters`,
+    );
+  }
 }
+
+checkEntryLength(LINE);
 
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, "entry.txt"), LINE, "utf8");
